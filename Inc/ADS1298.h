@@ -1,10 +1,3 @@
-/*==============================================================================
-* Reference: https://github.com/OpenBCI/OpenBCI-V2hardware-DEPRECATED/tree/master/Arduino/Libraries/ADS1299
-* Datasheet: http://www.ti.com/lit/ds/symlink/ads1298.pdf
-* Author: Kravchenko S.
-*
-*
-*==============================================================================*/
 
 #ifndef __ADS1298_H
 #define __ADS1298_H
@@ -159,7 +152,7 @@ typedef enum
 typedef enum
 {
   CONFIG_RLDREF_External = 0,
-  // RLDREF signal (AVDD � AVSS) / 2 generated internally
+  /// @brief RLDREF signal (AVDD - AVSS) / 2 generated internally
   CONFIG_RLDREF_Internal = 1
 }ADS_CONFIG_RLDREF_INT_Bit;
 
@@ -190,7 +183,42 @@ typedef enum
 // CONFIG3 REGISTER enums end
 
 
+/** @brief Configuration Register 1
+ */
+typedef union
+{
+    struct
+    {
+        /** @brief Output data rate.3 bits
+          * For High-Resolution mode, f MOD = f CLK / 4.
+          * For low power mode, f MOD = f CLK / 8.
+          * These bits determine the output data
+          * rate of the device
+          */
+        ADS_CONFIG_DR_Bits        DR: 3;
 
+        unsigned int              RESERVED: 2;
+
+        /** @brief CLK connection.
+          * This bit determines if the internal
+          * oscillator signal is connected to
+          * the CLK pin when the CLKSEL pin = 1
+          */
+        ADS_CONFIG_CLK_EN_Bit     CLK_EN: 1;
+
+        /** @brief Daisy-chain or multiple readback mode.
+          * This bit determines which mode is enabled
+          */
+        ADS_CONFIG_DAISY_EN_Bit   DAISY_EN: 1;
+
+        /** @brief High-resolution or low-power mode.
+          * This bit determines whether the device
+          * runs in low-power or high-resolution mode
+          */
+        ADS_CONFIG_HR_Bit         HR: 1;
+    } s;
+    uint8_t byte;
+}ADS_CONFIG1_InitTypeDef;
 
 
 typedef struct

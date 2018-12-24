@@ -25,6 +25,8 @@ void ADS_Init(){
 
 	//Work settings
 
+	ADS_CONFIG1_InitTypeDef config1;
+
 	/*ADS_CONFIG_InitTypeDef ADS_Config_struct;
 	ADS_Config_struct.HR = CONFIG_LowPower;
 	ADS_Config_struct.CLK_EN*/
