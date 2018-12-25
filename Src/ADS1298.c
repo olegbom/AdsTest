@@ -203,9 +203,9 @@ void ADS_Init(){
 
 void ADS_WriteOpcode(uint8_t opcode)
 {
-    ADC_CS_ENABLE();
+   // ADC_CS_ENABLE();
     transferSPI(ADS_OPCODE_SDATAC);
-    ADC_CS_DISABLE();
+   // ADC_CS_DISABLE();
 }
 
 void ADS_SDATAC(){
@@ -249,14 +249,11 @@ uint8_t ADS_getDeviceID() {			// simple hello world com check
 uint8_t ADS_RREG(uint8_t _address){		//  reads ONE register at _address
 	uint8_t opcode1 = _address + 0x20; 		//  RREG expects 001rrrrr where rrrrr = _address
 	
-	HAL_GPIO_WritePin(ADS_CS_GPIO_Port, ADS_CS_Pin, GPIO_PIN_RESET);			//  open SPI
-	
 	transferSPI( opcode1); 								//  opcode1
     transferSPI( 0); 											//  opcode2
   
 	regData[_address] = transferSPI( 0);		//  update mirror location with returned byte
 	
-	HAL_GPIO_WritePin(ADS_CS_GPIO_Port, ADS_CS_Pin, GPIO_PIN_SET);				//  close SPI	
 	
 	//HAL_UART_Transmit(&huart1, &regData[0], sizeof(uint8_t),0x1000);
 	
@@ -272,8 +269,6 @@ void ADS_RREGS(uint8_t _address, uint8_t _numRegistersMinusOne) {
 	
 	uint8_t opcode1 = _address + 0x20; 				//  RREG expects 001rrrrr where rrrrr = _address
 	
-	HAL_GPIO_WritePin(ADS_CS_GPIO_Port,ADS_CS_Pin, GPIO_PIN_RESET); 					//  open SPI
-	
 	transferSPI( opcode1); 										//  opcode1
 	transferSPI( _numRegistersMinusOne);				//  opcode2
 
@@ -281,7 +276,6 @@ void ADS_RREGS(uint8_t _address, uint8_t _numRegistersMinusOne) {
 		regData[_address + i] = transferSPI( 0x00); 	//  add register byte to mirror array
 	}
 	
-	HAL_GPIO_WritePin(ADS_CS_GPIO_Port,ADS_CS_Pin, GPIO_PIN_SET); 			//  close SPI
 	
 
 }
@@ -290,13 +284,11 @@ void ADS_RREGS(uint8_t _address, uint8_t _numRegistersMinusOne) {
 void ADS_WREG(uint8_t _address, uint8_t _value) {	//  Write ONE register at _address
 	uint8_t opcode1 = _address + 0x40; 				//  WREG expects 010rrrrr where rrrrr = _address
 	
-	HAL_GPIO_WritePin(ADS_CS_GPIO_Port,ADS_CS_Pin, GPIO_PIN_RESET); 					//  open SPI
 	
 	transferSPI( opcode1);											//  Send WREG command & address
 	transferSPI( 0x00);												//	Send number of registers to read -1
 	transferSPI( _value);											//  Write the value to the register
 	
-	HAL_GPIO_WritePin(ADS_CS_GPIO_Port,ADS_CS_Pin, GPIO_PIN_SET); 						//  close SPI
 	
 	regData[_address] = _value;			//  update the mirror array
 	
@@ -308,7 +300,6 @@ void ADS_WREGS(uint8_t _address, uint8_t _numRegistersMinusOne){
 	
 	uint8_t opcode1 = _address + 0x40;				//  WREG expects 010rrrrr where rrrrr = _address
 	
-	HAL_GPIO_WritePin(ADS_CS_GPIO_Port,ADS_CS_Pin, GPIO_PIN_RESET); 					//  open SPI
 	
 	transferSPI( opcode1);											//  Send WREG command & address
 	transferSPI( _numRegistersMinusOne);				//	Send number of registers to read -1	
@@ -317,7 +308,6 @@ void ADS_WREGS(uint8_t _address, uint8_t _numRegistersMinusOne){
 		transferSPI( regData[i]);								//  Write to the registers
 	}	
 	
-	HAL_GPIO_WritePin(ADS_CS_GPIO_Port,ADS_CS_Pin, GPIO_PIN_SET); 						//  close SPI
 	
 
 }
@@ -332,7 +322,6 @@ void ADS_updateChannelData(){
 		channelData[i] = 0;
 	}
 	
-	HAL_GPIO_WritePin(ADS_CS_GPIO_Port, ADS_CS_Pin, GPIO_PIN_RESET); 					//  open SPI
 	
 	// READ CHANNEL DATA FROM FIRST ADS IN DAISY LINE
 	for(i = 0; i < 3; i++){										//  read 3 byte status register from ADS 1 (1100+LOFF_STATP+LOFF_STATN+GPIO[7:4])
@@ -348,7 +337,6 @@ void ADS_updateChannelData(){
 	}
 	
 	
-	HAL_GPIO_WritePin(ADS_CS_GPIO_Port, ADS_CS_Pin, GPIO_PIN_SET); 			// CLOSE SPI
 	
 	//reformat the numbers
 
@@ -377,7 +365,6 @@ void ADS_RDATA() {				//  use in Stop Read Continuous mode when DRDY goes low
 		channelData[i] = 0;
 	}
 	
-	HAL_GPIO_WritePin(ADS_CS_GPIO_Port,ADS_CS_Pin,GPIO_PIN_RESET); 					//  open SPI
 	transferSPI( ADS_OPCODE_RDATA);
 	
 	// READ CHANNEL DATA FROM FIRST ADS IN DAISY LINE
@@ -395,11 +382,6 @@ void ADS_RDATA() {				//  use in Stop Read Continuous mode when DRDY goes low
 		
 	}
 	
-	
-	HAL_GPIO_WritePin(ADS_CS_GPIO_Port,ADS_CS_Pin,GPIO_PIN_SET); 					//  open SPI
-	
-	
-
 	for( i = 0; i<nchan; i++){			// convert 3 byte 2's compliment to 4 byte 2's compliment	
 		//if(bitRead(channelData[i],23) == 1){	
 		if( (channelData[i] & 0x00800000) == 0x00800000  ){	
@@ -414,21 +396,6 @@ void ADS_RDATA() {				//  use in Stop Read Continuous mode when DRDY goes low
 }
 
 // String-Byte converters for RREG and WREG
-
-
-
-	
-
-void ADS_SendData(){
-	static char dataString[40];
-	for (uint8_t i = 0; i < 8; i++)
-	{
-
-		sprintf(dataString, "Channel %u: %li\r\n", i+1, channelData[i]);
-		USART_Send(dataString, 40);
-
-	}
-}
 
 int32_t* getChannelData(){
 	return channelData;

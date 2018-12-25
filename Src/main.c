@@ -1,4 +1,4 @@
-
+/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file           : main.c
@@ -46,9 +46,10 @@
   *
   ******************************************************************************
   */
+/* USER CODE END Header */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "stm32f4xx_hal.h"
 #include "fatfs.h"
 #include "spi.h"
 #include "tim.h"
@@ -57,6 +58,7 @@
 #include "gpio.h"
 #include "fsmc.h"
 
+/* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
 #include "ADS1298.h"
@@ -65,6 +67,21 @@
 #include  <sys/unistd.h>
 
 /* USER CODE END Includes */
+
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN PTD */
+
+/* USER CODE END PTD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
+/* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 
@@ -86,6 +103,7 @@ void USART_Send(char* strings, uint16_t sizew);
 
 /* USER CODE END PFP */
 
+/* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
@@ -111,42 +129,12 @@ int _write(int file, char *data, int len)
    return (status == HAL_OK ? len : 0);
 }
 
-typedef union
-{
-    struct
-    {
-
-
-     ADS_CONFIG_DR_Bits        DR: 3;        /*!< Output data rate. 3 bits
-                                               For High-Resolution mode, f MOD = f CLK / 4.
-                                               For low power mode, f MOD = f CLK / 8.
-                                               These bits determine the output data
-                                               rate of the device */
-     unsigned int        _reserv: 2;
-
-          ADS_CONFIG_CLK_EN_Bit     CLK_EN: 1;    /*!< CLK connection.
-                                               This bit determines if the internal
-                                               oscillator signal is connected to
-                                               the CLK pin when the CLKSEL pin = 1 */
-
-          ADS_CONFIG_DAISY_EN_Bit   DAISY_EN: 1;  /*!< Daisy-chain or multiple readback mode.
-                                               This bit determines which mode is enabled */
-
-          ADS_CONFIG_HR_Bit         HR: 1;        /*!< High-resolution or low-power mode.
-                                               This bit determines whether the device
-                                               runs in low-power or high-resolution mode */
-
-
-    }s;
-    uint8_t byte;
-} TestUnion;
 
 /* USER CODE END 0 */
 
 /**
   * @brief  The application entry point.
-  *
-  * @retval None
+  * @retval int
   */
 int main(void)
 {
@@ -154,7 +142,7 @@ int main(void)
 
   /* USER CODE END 1 */
 
-  /* MCU Configuration----------------------------------------------------------*/
+  /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
@@ -179,6 +167,7 @@ int main(void)
   MX_USART6_UART_Init();
   MX_USB_HOST_Init();
   MX_FATFS_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 
 
@@ -194,18 +183,16 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  TestUnion testUnion = {
-          .byte = 0
-  };
+
   char message[40];
   uint16_t index = 0;
   while (1)
   {
 
-  /* USER CODE END WHILE */
+    /* USER CODE END WHILE */
     MX_USB_HOST_Process();
 
-  /* USER CODE BEGIN 3 */
+    /* USER CODE BEGIN 3 */
 
 		if (intDRDY) {
 
@@ -231,26 +218,20 @@ int main(void)
 			    index = 0;
             }
 
-			if(index % 10 == 0)
-			{
-			    testUnion.byte++;
-			}
+
 			LCD_DrawPixel(index, (uint16_t)(channelData[0]/70000 + 120) ,YELLOW);
             LCD_DisplayStringLine(0,13, "intDRDY Changed");
 
 
 			//ADS_START();
 		}
-		sprintf(message, "Byte: 0x%2.2X", testUnion.byte);
 
-		LCD_DisplayStringLine(0,26, message);
-		sprintf(message, "HR: %d DAISY_EN: %d CLK_EN: %d _reserv: %d DR: %d", testUnion.s.HR, testUnion.s.DAISY_EN,testUnion.s.CLK_EN,testUnion.s._reserv,testUnion.s.DR);
-		LCD_DisplayStringLine(0,39, message);
+
+
 
 
   }
   /* USER CODE END 3 */
-
 }
 
 /**
@@ -259,18 +240,15 @@ int main(void)
   */
 void SystemClock_Config(void)
 {
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-  RCC_OscInitTypeDef RCC_OscInitStruct;
-  RCC_ClkInitTypeDef RCC_ClkInitStruct;
-
-    /**Configure the main internal regulator output voltage 
-    */
+  /**Configure the main internal regulator output voltage 
+  */
   __HAL_RCC_PWR_CLK_ENABLE();
-
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-
-    /**Initializes the CPU, AHB and APB busses clocks 
-    */
+  /**Initializes the CPU, AHB and APB busses clocks 
+  */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -281,11 +259,10 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLQ = 7;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
-    _Error_Handler(__FILE__, __LINE__);
+    Error_Handler();
   }
-
-    /**Initializes the CPU, AHB and APB busses clocks 
-    */
+  /**Initializes the CPU, AHB and APB busses clocks 
+  */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
@@ -295,19 +272,8 @@ void SystemClock_Config(void)
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
   {
-    _Error_Handler(__FILE__, __LINE__);
+    Error_Handler();
   }
-
-    /**Configure the Systick interrupt time 
-    */
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
-
-    /**Configure the Systick 
-    */
-  HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
-
-  /* SysTick_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
 
 /* USER CODE BEGIN 4 */
@@ -315,7 +281,7 @@ void SystemClock_Config(void)
 uint8_t transferSPI(uint8_t send){
 	uint8_t rx = 0x00;
 
-	HAL_SPI_TransmitReceive(&hspi2, &send, &rx, sizeof(rx),0x1000);
+	HAL_SPI_TransmitReceive(&hspi1, &send, &rx, sizeof(rx),0x1000);
 
 	return rx;
 }
@@ -328,11 +294,9 @@ void USART_Send(char* strings, uint16_t sizew)
 
 /**
   * @brief  This function is executed in case of error occurrence.
-  * @param  file: The file name as string.
-  * @param  line: The line in file as a number.
   * @retval None
   */
-void _Error_Handler(char *file, int line)
+void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
@@ -350,7 +314,7 @@ void _Error_Handler(char *file, int line)
   * @param  line: assert_param error line source number
   * @retval None
   */
-void assert_failed(uint8_t* file, uint32_t line)
+void assert_failed(uint8_t *file, uint32_t line)
 { 
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
@@ -358,13 +322,5 @@ void assert_failed(uint8_t* file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

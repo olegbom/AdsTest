@@ -49,6 +49,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbh_core.h"
+#include "usbh_platform.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -64,7 +65,7 @@
 /* USER CODE END PV */
 
                 HCD_HandleTypeDef hhcd_USB_OTG_FS;
-void _Error_Handler(char * file, int line);
+void Error_Handler(void);
 
 /* USER CODE BEGIN 0 */
 
@@ -96,16 +97,10 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef* hcdHandle)
   /* USER CODE END USB_OTG_FS_MspInit 0 */
   
     /**USB_OTG_FS GPIO Configuration    
-    PA9     ------> USB_OTG_FS_VBUS
     PA10     ------> USB_OTG_FS_ID
     PA11     ------> USB_OTG_FS_DM
     PA12     ------> USB_OTG_FS_DP 
     */
-    GPIO_InitStruct.Pin = VBUS_FS_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(VBUS_FS_GPIO_Port, &GPIO_InitStruct);
-
     GPIO_InitStruct.Pin = OTG_FS_ID_Pin|OTG_FS_DM_Pin|OTG_FS_DP_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -136,12 +131,11 @@ void HAL_HCD_MspDeInit(HCD_HandleTypeDef* hcdHandle)
     __HAL_RCC_USB_OTG_FS_CLK_DISABLE();
   
     /**USB_OTG_FS GPIO Configuration    
-    PA9     ------> USB_OTG_FS_VBUS
     PA10     ------> USB_OTG_FS_ID
     PA11     ------> USB_OTG_FS_DM
     PA12     ------> USB_OTG_FS_DP 
     */
-    HAL_GPIO_DeInit(GPIOA, VBUS_FS_Pin|OTG_FS_ID_Pin|OTG_FS_DM_Pin|OTG_FS_DP_Pin);
+    HAL_GPIO_DeInit(GPIOA, OTG_FS_ID_Pin|OTG_FS_DM_Pin|OTG_FS_DP_Pin);
 
     /* Peripheral interrupt Deinit*/
     HAL_NVIC_DisableIRQ(OTG_FS_IRQn);
@@ -222,7 +216,7 @@ USBH_StatusTypeDef USBH_LL_Init(USBH_HandleTypeDef *phost)
   hhcd_USB_OTG_FS.Init.Sof_enable = DISABLE;
   if (HAL_HCD_Init(&hhcd_USB_OTG_FS) != HAL_OK)
   {
-    _Error_Handler(__FILE__, __LINE__);
+    Error_Handler( );
   }
 
   USBH_LL_SetTimer(phost, HAL_HCD_GetCurrentFrame(&hhcd_USB_OTG_FS));
@@ -559,30 +553,14 @@ USBH_URBStateTypeDef USBH_LL_GetURBState(USBH_HandleTypeDef *phost, uint8_t pipe
   */
 USBH_StatusTypeDef USBH_LL_DriverVBUS(USBH_HandleTypeDef *phost, uint8_t state)
 {
+  if (phost->id == HOST_FS) {
+    MX_DriverVbusFS(state);
+  }
 
   /* USER CODE BEGIN 0 */
 
   /* USER CODE END 0*/
 
-  if (phost->id == HOST_FS)
-  {
-    if (state == 0)
-    {
-      /* Drive high Charge pump */
-      /* ToDo: Add IOE driver control */
-      /* USER CODE BEGIN DRIVE_HIGH_CHARGE_FOR_FS */
-
-      /* USER CODE END DRIVE_HIGH_CHARGE_FOR_FS */
-    }
-    else
-    {
-      /* Drive low Charge pump */
-      /* ToDo: Add IOE driver control */
-      /* USER CODE BEGIN DRIVE_LOW_CHARGE_FOR_FS */
-
-      /* USER CODE END DRIVE_LOW_CHARGE_FOR_FS */
-    }
-  }
   HAL_Delay(200);
   return USBH_OK;
 }
