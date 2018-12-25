@@ -8,7 +8,6 @@ int stat_1;    	// used to hold the status register for boards 1 and 2
 uint8_t regData[24];		// array with data from all registers
 int32_t channelData [8];	// array used when reading channel data board 1+2
 
-uint32_t pila = 0;
 /*------------------------------- FUNCTIIONS -----------------------------*/
 
 void ADS_Init(){
@@ -26,7 +25,12 @@ void ADS_Init(){
 	//Work settings
 
 	ADS_CONFIG1_InitTypeDef config1;
-
+	config1.byte = 0x00;
+	config1.s.DR = CONFIG1_DR_Fmod_Div_256;
+	config1.s.HR = CONFIG1_HR_LowPower;
+	config1.s.CLK_EN = CONFIG1_CLK_OscClkOutDisable;
+	config1.s.DAISY_EN = CONFIG1_DAISY_DaisyChain;
+	ADS_WREG(ADS_ADR_CONFIG1, config1.byte);
 	/*ADS_CONFIG_InitTypeDef ADS_Config_struct;
 	ADS_Config_struct.HR = CONFIG_LowPower;
 	ADS_Config_struct.CLK_EN*/

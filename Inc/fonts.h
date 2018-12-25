@@ -1,20 +1,20 @@
 #include <stdint.h>
 
-            typedef struct _tGLYPH
-            {
-                uint8_t Y0;
-                uint8_t Y1;
-                uint8_t Width;
-                uint32_t Index;
-            } MyGLYPH;
+typedef struct
+{
+    uint8_t Y0;
+    uint8_t Y1;
+    uint8_t Width;
+    uint32_t Index;
+} MyGLYPH;
 
-            typedef struct _tFont
-            {
-                const uint32_t* table;
-                const MyGLYPH* glyphTable;
-                uint8_t Height;
-                uint8_t Letter_spacing;
-            } MyFONT;
+typedef struct
+{
+    const uint32_t* table;
+    const MyGLYPH* glyphTable;
+    uint8_t Height;
+    uint8_t Letter_spacing;
+} MyFONT;
 
 extern MyFONT PT_Sans13;
 
@@ -24,7 +24,7 @@ extern MyFONT PT_Sans7;
 int convert_utf8_to_windows1251(const char* utf8, char* windows1251, int n);
 
 
-typedef struct ConvLetter {
+typedef struct {
         char    win1251;
         int unicode;
 } Letter;

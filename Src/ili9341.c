@@ -1,7 +1,7 @@
 /*
  * ili9341.c
  *
- *  Created on: 6 àâã. 2017 ã.
+ *  Created on: 6 ï¿½ï¿½ï¿½. 2017 ï¿½.
  *      Author: Oleg
  */
 #include "ili9341.h"
@@ -119,7 +119,7 @@ void LCD_DisplayChar(uint16_t Xpos, uint16_t Ypos, uint8_t Ascii)
   LCD_DrawChar(Xpos, Ypos, &LCD_Currentfonts->glyphTable[Ascii - 32]);
 }
 
-void LCD_DisplayStringLine(uint16_t Xpos, uint16_t Ypos, char *ptr)
+void LCD_DisplayStringLine(uint16_t Xpos, uint16_t Ypos,const char *ptr)
 {
   static char cp1251[100];
   convert_utf8_to_windows1251(ptr, cp1251, strlen(ptr));
