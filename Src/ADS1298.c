@@ -24,16 +24,13 @@ void ADS_Init(){
 
 	//Work settings
 
-	ADS_CONFIG1_InitTypeDef config1;
-	config1.byte = 0x00;
-	config1.s.DR = CONFIG1_DR_Fmod_Div_256;
+	ADS_CONFIG1_InitTypeDef config1 = {.byte = 0x00};
+	config1.s.DR = CONFIG1_DR_Fmod_Div_1024;
 	config1.s.HR = CONFIG1_HR_LowPower;
 	config1.s.CLK_EN = CONFIG1_CLK_OscClkOutDisable;
 	config1.s.DAISY_EN = CONFIG1_DAISY_DaisyChain;
 	ADS_WREG(ADS_ADR_CONFIG1, config1.byte);
-	/*ADS_CONFIG_InitTypeDef ADS_Config_struct;
-	ADS_Config_struct.HR = CONFIG_LowPower;
-	ADS_Config_struct.CLK_EN*/
+
 
 	//0b0000_0110
 	//7 bit on 0 - High-resolution(1) or low-power(0) mode
@@ -42,8 +39,16 @@ void ADS_Init(){
 	//  Oscillator clock output disabled(0) or enabled(1)
 	//4:3 bit on 0 - Reserved
 	//2:0 bit on 100 - Output data rate 100: f MOD / 1024 (1 kSPS)
-	ADS_WREG(ADS_ADR_CONFIG1,0x06);
+	//ADS_WREG(ADS_ADR_CONFIG1,0x06);
 	HAL_Delay(100);
+
+
+    ADS_CONFIG2_InitTypeDef config2 = {.byte = 0x00};
+    config2.s.INT_TEST = CONFIG2_INT_TEST_TestSignalsInternal;
+    config2.s.TEST_AMP = CONFIG2_TEST_AMP_TestSignalsAmp_1_DIV_2400V;
+    config2.s.TEST_FREQ = CONFIG2_TEST_FREQ_Fclk_DIV_2pow20;
+    config2.s.WCT_CHOP = CONFIG2_WCT_CHOP_ChoppingFreqVaries;
+    ADS_WREG(ADS_ADR_CONFIG2, config2.byte);
 
 	//0b0001_0001
 	//7:6 bit on 0 - Reserved
@@ -52,7 +57,7 @@ void ADS_Init(){
 	//3 bit on 0 - Reserved
 	//2 bit on 0 - Test signal amplitude
 	//1:0 bit on 00 -  Pulsed at f CLK / 2^21
-	ADS_WREG(ADS_ADR_CONFIG2,0x11);
+	//ADS_WREG(ADS_ADR_CONFIG2,0x11);
 	HAL_Delay(100);
 
 	//0b1101_1100

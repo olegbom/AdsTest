@@ -45,9 +45,9 @@
 // CONFIG1 REGISTER begin
 
 /** @brief High-resolution or low-power mode
- * This bit determines whether the device runs in low-power or
- * high-resolution mode.
- */
+  * This bit determines whether the device runs in low-power or
+  * high-resolution mode.
+  */
 typedef enum
 {
   CONFIG1_HR_LowPower       = 0,
@@ -93,7 +93,7 @@ typedef enum
 
 
 /** @brief Configuration Register 1
- */
+  */
 typedef union
 {
     struct
@@ -110,46 +110,71 @@ typedef union
 
 // CONFIG1 REGISTER end
 
-// CONFIG2 REGISTER enums begin
+// CONFIG2 REGISTER begin
 
-
-
+/** @brief WCT chopping scheme.
+  * This bit determines whether the chopping
+  * frequency of WCT amplifiers is variable or fixed
+  */
 typedef enum
 {
-  CONFIG_WCT_CHOP_ChoppingFreqVaries = 0,
-  CONFIG_WCT_CHOP_ChoppingFreqConst = 1 // Fmod / 16
-}ADS_CONFIG_WCT_CHOP_Bit;
+  CONFIG2_WCT_CHOP_ChoppingFreqVaries = 0,
+  CONFIG2_WCT_CHOP_ChoppingFreqConst = 1 // Fmod / 16
+}ADS_CONFIG2_WCT_CHOP_Bit;
 
 
-
+/** @brief TEST source.
+  * This bit determines the source for the
+  * test signal
+  */
 typedef enum
 {
-  CONFIG_INT_TEST_TestSignalsExternal = 0,
-  CONFIG_INT_TEST_TestSignalsInternal = 1
-}ADS_CONFIG_INT_TEST_Bit;
+  CONFIG2_INT_TEST_TestSignalsExternal = 0,
+  CONFIG2_INT_TEST_TestSignalsInternal = 1
+}ADS_CONFIG2_INT_TEST_Bit;
 
-
+/** @brief Test signal amplitude.
+  * These bits determine the calibration
+  * signal amplitude
+  */
 typedef enum
 {
-  // 1 * -(VREFP - VREFN) / 2400 V
-  CONFIG_TEST_AMP_TestSignalsAmp_1_DIV_2400V = 0,
-
-  // 2 * -(VREFP - VREFN) / 2400 V
-  CONFIG_TEST_AMP_TestSignalsAmp_2_DIV_2400V = 1
-}ADS_CONFIG_TEST_AMP_Bit;
-
+  /// @brief 1 * -(VREFP - VREFN) / 2400 V
+  CONFIG2_TEST_AMP_TestSignalsAmp_1_DIV_2400V = 0,
+  /// @brief 2 * -(VREFP - VREFN) / 2400 V
+  CONFIG2_TEST_AMP_TestSignalsAmp_2_DIV_2400V = 1
+}ADS_CONFIG2_TEST_AMP_Bit;
 
 
+/** @brief Test signal frequency.
+  * These bits determine the calibration
+  * signal frequency
+  */
 typedef enum
 {
-  CONFIG_TEST_FREQ_Fclk_DIV_2pow21   = 0b00,
-  CONFIG_TEST_FREQ_Fclk_DIV_2pow20   = 0b01,
-  CONFIG_TEST_FREQ_NotUsed           = 0b10,
-  CONFIG_TEST_FREQ_DC                = 0b11,
+  CONFIG2_TEST_FREQ_Fclk_DIV_2pow21   = 0b00,
+  CONFIG2_TEST_FREQ_Fclk_DIV_2pow20   = 0b01,
+  CONFIG2_TEST_FREQ_NotUsed           = 0b10,
+  CONFIG2_TEST_FREQ_DC                = 0b11,
+}ADS_CONFIG2_TEST_FREQ_Bits;
 
-}ADS_CONFIG_TEST_FREQ_Bits;
+/** @brief Configuration Register 2
+ */
+typedef union
+{
+    struct
+    {
+        ADS_CONFIG2_TEST_FREQ_Bits TEST_FREQ:2;
+        ADS_CONFIG2_TEST_AMP_Bit   TEST_AMP: 1;
+        unsigned int               RESERVED2:1;
+        ADS_CONFIG2_INT_TEST_Bit   INT_TEST: 1;
+        ADS_CONFIG2_WCT_CHOP_Bit   WCT_CHOP: 1;
+        unsigned int               RESERVED1:2;
+    } s;
+    uint8_t byte;
+}ADS_CONFIG2_InitTypeDef;
 
-// CONFIG2 REGISTER enums end
+// CONFIG2 REGISTER end
 
 // CONFIG3 REGISTER enums begin
 
@@ -215,42 +240,6 @@ typedef enum
 
 typedef struct
 {
-  //CONFIG1 Register
-  ADS_CONFIG1_HR_Bit         HR;        /*!< High-resolution or low-power mode.
-                                       This bit determines whether the device
-                                       runs in low-power or high-resolution mode */
-
-  ADS_CONFIG1_DAISY_EN_Bit   DAISY_EN;  /*!< Daisy-chain or multiple readback mode.
-                                       This bit determines which mode is enabled */
-
-  ADS_CONFIG1_CLK_EN_Bit     CLK_EN;    /*!< CLK connection.
-                                       This bit determines if the internal
-                                       oscillator signal is connected to
-                                       the CLK pin when the CLKSEL pin = 1 */
-
-  ADS_CONFIG1_DR_Bits        DR; 	   /*!< Output data rate. 3 bits
-                           	   	   	   For High-Resolution mode, f MOD = f CLK / 4.
-                           	   	   	   For low power mode, f MOD = f CLK / 8.
-                           	   	   	   These bits determine the output data
-                           	   	   	   rate of the device */
-
-  //CONFIG2 Register
-  ADS_CONFIG_WCT_CHOP_Bit   WCT_CHOP;  /*!< WCT chopping scheme.
-                           	   	   	   This bit determines whether the chopping
-                           	   	   	   frequency of WCT amplifiers is variable
-                           	   	   	   or fixed */
-
-  ADS_CONFIG_INT_TEST_Bit   INT_TEST;  /*!< TEST source.
-                           	   	   	   This bit determines the source for the
-                           	   	   	   test signal */
-
-  ADS_CONFIG_TEST_AMP_Bit   TEST_AMP;  /*!< Test signal amplitude.
-                           	   	   	   These bits determine the calibration
-                           	   	   	   signal amplitude */
-
-  ADS_CONFIG_TEST_FREQ_Bits TEST_FREQ; /*!< Test signal frequency.
-                           	   	   	   These bits determine the calibration
-                           	   	   	   signal frequency */
 
   //CONFIG3 Register
   ADS_CONFIG_PD_REFBUF_Bit  PD_REFBUF; /*!< Power-down reference buffer.
