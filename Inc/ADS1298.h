@@ -274,13 +274,7 @@ typedef struct
 
 
 
-#define CONFIG1_HR 					0x80
-#define CONFIG1_LP 					0x00
-#define CONFIG1_DAISY_EN			0x00
-#define CONFIG1_DAIST_MUL			0x40
-#define CONFIG1_CLK_EN_OUT			0x00
-#define CONFIG1_CLK_DIS_OUT			0x20
-#define CONFIG1_DR_250SPS			0x06
+
 
 extern uint8_t verbose;
 

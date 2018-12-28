@@ -93,6 +93,10 @@ void Error_Handler(void);
 #define Joy2_SW_GPIO_Port GPIOE
 #define CS_I2C_SPI_Pin GPIO_PIN_3
 #define CS_I2C_SPI_GPIO_Port GPIOE
+#define ESP_ENABLE_Pin GPIO_PIN_4
+#define ESP_ENABLE_GPIO_Port GPIOE
+#define ESP_RESET_Pin GPIO_PIN_5
+#define ESP_RESET_GPIO_Port GPIOE
 #define PC14_OSC32_IN_Pin GPIO_PIN_14
 #define PC14_OSC32_IN_GPIO_Port GPIOC
 #define PC15_OSC32_OUT_Pin GPIO_PIN_15
