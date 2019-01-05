@@ -60,6 +60,15 @@ void ADS_Init(){
 	//ADS_WREG(ADS_ADR_CONFIG2,0x11);
 	HAL_Delay(100);
 
+	ADS_CONFIG3_InitTypeDef config3 = {.byte = 0x00};
+	config3.s.PD_REFBUF = CONFIG3_PD_REFBUF_Enable;
+	config3.s.VREF_4V = CONFIG3_VREF_4V;
+	config3.s.RLD_MEAS = CONFIG3_RLD_MEAS_Routed;
+	config3.s.RLDREF_INT = CONFIG3_RLDREF_Internal;
+	config3.s.PD_RLD = CONFIG3_PD_RLD_Enable;
+	config3.s.RLD_LOFF_SENS = CONFIG3_RLD_LOFF_SENS_Disable;
+	config3.s.RLD_STAT = CONFIG3_RLD_STAT_Connected;
+	ADS_WREG(ADS_ADR_CONFIG3, config3.byte);
 	//0b1101_1100
 	//7 bit on 1 - Power-down reference buffer: Enable(1) or Power-down(0)
 	//6 bit on 1 - Reserved
@@ -69,9 +78,15 @@ void ADS_Init(){
 	//2 bit on 1 - RLD buffer power: Enable(1) or Power-down(0)
 	//1 bit on 0 - RLD sense function: Enable(1) or Disabled(0)
 	//0 bit on 0 - RLD lead-off status: Connected(0) or not connected(1)
-	ADS_WREG(ADS_ADR_CONFIG3,0xDC);  
+	//ADS_WREG(ADS_ADR_CONFIG3,0xDC);
 	HAL_Delay(100);
 	
+	ADS_LOFF_InitTypeDef loff = {.byte = 0x00};
+	loff.s.COMP_TH = LOFF_COMP_TH_P_95_N_5;
+	loff.s.VLEAD_OFF_EN = LOFF_VLEAD_OFF_EN_CURRENT_SOURCE;
+	loff.s.ILEAD_OFF = LOFF_ILEAD_OFF_6_nA;
+	loff.s.FLEAD_OFF = LOFF_FLEAD_OFF_DC;
+	ADS_WREG(ADS_ADR_LOFF, loff.byte);
 	//0b0000_0011
 	//7:5 bit on 000 - Lead-off comparator threshold: 000 = 95%
 	//4 bit on 0 - Lead-off detection mode:
@@ -79,7 +94,7 @@ void ADS_Init(){
 	//  1 - pullup or pulldown resistor mode lead-off
 	//3:2 bit on 00 - Lead-off current magnitude: 00 = 6 nA
 	//1:0 bit on 11 - Lead-off frequency: 11 = DC lead-off detection turned on
-	ADS_WREG(ADS_ADR_LOFF,0x03);  
+	//ADS_WREG(ADS_ADR_LOFF,0x03);
 	HAL_Delay(10);
 	
 	//0b0101_0000

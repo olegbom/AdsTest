@@ -107,7 +107,6 @@ typedef union
     uint8_t byte;
 }ADS_CONFIG1_InitTypeDef;
 
-
 // CONFIG1 REGISTER end
 
 // CONFIG2 REGISTER begin
@@ -176,101 +175,166 @@ typedef union
 
 // CONFIG2 REGISTER end
 
-// CONFIG3 REGISTER enums begin
+// CONFIG3 REGISTER begin
 
-
-
+/** @brief Power-down reference buffer.
+  * This bit determines the power-down
+  * reference buffer state
+  */
 typedef enum
 {
-  CONFIG_PD_REFBUF_PowerDown = 0,
-  CONFIG_PD_REFBUF_Enable    = 1
-}ADS_CONFIG_PD_REFBUF_Bit;
+  CONFIG3_PD_REFBUF_PowerDown = 0,
+  CONFIG3_PD_REFBUF_Enable    = 1
+}ADS_CONFIG3_PD_REFBUF_Bit;
 
 
-
+/** @brief Reference voltage.
+  * This bit determines the reference
+  * voltage, VREFP
+  */
 typedef enum
 {
-  CONFIG_VREF_2dot4V = 0,
-  CONFIG_VREF_4V     = 1
-}ADS_CONFIG_VREF_4V_Bit;
+  CONFIG3_VREF_2dot4V = 0,
+  CONFIG3_VREF_4V     = 1
+}ADS_CONFIG3_VREF_4V_Bit;
 
 
-
+/** @brief RLD measurement.
+  * This bit enables RLD measurement.
+  * The RLD signal may be measured
+  * with any channel
+  */
 typedef enum
 {
-  CONFIG_RLD_MEAS_Open   = 0,
-  CONFIG_RLD_MEAS_Routed = 1
-}ADS_CONFIG_RLD_MEAS_Bit;
+  CONFIG3_RLD_MEAS_Open   = 0,
+  CONFIG3_RLD_MEAS_Routed = 1
+}ADS_CONFIG3_RLD_MEAS_Bit;
 
-
+/** @brief RLDREF signal.
+  * This bit determines the RLDREF signal
+  * source
+  */
 typedef enum
 {
-  CONFIG_RLDREF_External = 0,
+  CONFIG3_RLDREF_External = 0,
   /// @brief RLDREF signal (AVDD - AVSS) / 2 generated internally
-  CONFIG_RLDREF_Internal = 1
-}ADS_CONFIG_RLDREF_INT_Bit;
+  CONFIG3_RLDREF_Internal = 1
+}ADS_CONFIG3_RLDREF_INT_Bit;
 
 
-
+/** @brief RLD buffer power.
+  * This bit determines the RLD buffer
+  * power state
+  */
 typedef enum
 {
-  CONFIG_PD_RLD_PowerDown = 0,
-  CONFIG_PD_RLD_Enable = 1
-}ADS_CONFIG_PD_RLD_Bit;
+  CONFIG3_PD_RLD_PowerDown = 0,
+  CONFIG3_PD_RLD_Enable = 1
+}ADS_CONFIG3_PD_RLD_Bit;
 
 
-
+/** @brief RLD sense function.
+  * This bit enables the RLD sense function
+  */
 typedef enum
 {
-  CONFIG_RLD_LOFF_SENS_Disable = 0,
-  CONFIG_RLD_LOFF_SENS_Enable  = 1
-}ADS_CONFIG_RLD_LOFF_SENS_Bit;
+  CONFIG3_RLD_LOFF_SENS_Disable = 0,
+  CONFIG3_RLD_LOFF_SENS_Enable  = 1
+}ADS_CONFIG3_RLD_LOFF_SENS_Bit;
 
 
-
+/** @brief RLD lead-off status.
+  * This bit determines the RLD status
+  */
 typedef enum
 {
-  CONFIG_RLD_STAT_Connected    = 0,
-  CONFIG_RLD_STAT_NotConnected = 1
-}ADS_CONFIG_RLD_STAT_Bit;
+  CONFIG3_RLD_STAT_Connected    = 0,
+  CONFIG3_RLD_STAT_NotConnected = 1
+}ADS_CONFIG3_RLD_STAT_Bit;
 
-// CONFIG3 REGISTER enums end
-
-
-
-typedef struct
+/** @brief Configuration Register 3
+  */
+typedef union
 {
+    struct
+    {
+        ADS_CONFIG3_RLD_STAT_Bit      RLD_STAT      :1;
+        ADS_CONFIG3_RLD_LOFF_SENS_Bit RLD_LOFF_SENS :1;
+        ADS_CONFIG3_PD_RLD_Bit        PD_RLD        :1;
+        ADS_CONFIG3_RLDREF_INT_Bit    RLDREF_INT    :1;
+        ADS_CONFIG3_RLD_MEAS_Bit      RLD_MEAS      :1;
+        ADS_CONFIG3_VREF_4V_Bit       VREF_4V       :1;
+        unsigned int                  RESERVED      :1;
+        ADS_CONFIG3_PD_REFBUF_Bit     PD_REFBUF     :1;
+    } s;
+    uint8_t byte;
+}ADS_CONFIG3_InitTypeDef;
 
-  //CONFIG3 Register
-  ADS_CONFIG_PD_REFBUF_Bit  PD_REFBUF; /*!< Power-down reference buffer.
-                           	   	   	   This bit determines the power-down
-                           	   	   	   reference buffer state */
+// CONFIG3 REGISTER end
 
-  ADS_CONFIG_VREF_4V_Bit    VREF_4V;   /*!< Reference voltage.
-                           	   	   	   This bit determines the reference
-                           	   	   	   voltage, VREFP */
+// LOFF: Lead-Off Control Register start
 
-  ADS_CONFIG_RLD_MEAS_Bit   RLD_MEAS;  /*!< Reference voltage.
-                           	   	   	   This bit determines the reference
-                           	   	   	   voltage, VREFP */
+/** @brief Lead-off comparator threshold
+  */
+typedef enum
+{
+  LOFF_COMP_TH_P_95_N_5      = 0b000,
+  LOFF_COMP_TH_P_92_5_N_7_5  = 0b001,
+  LOFF_COMP_TH_P_90_N_10     = 0b010,
+  LOFF_COMP_TH_P_87_5_N_12_5 = 0b011,
+  LOFF_COMP_TH_P_85_N_15     = 0b100,
+  LOFF_COMP_TH_P_80_5_N_20   = 0b101,
+  LOFF_COMP_TH_P_75_N_25     = 0b110,
+  LOFF_COMP_TH_P_70_N_30     = 0b111
+}ADS_LOFF_COMP_TH_Bits;
 
-  ADS_CONFIG_RLDREF_INT_Bit RLDREF_INT;/*!< RLDREF signal.
-                           	   	   	   This bit determines the RLDREF signal
-                           	   	   	   source */
+/** @brief Lead-off detection mode
+  * This bit determines the lead-off detection mode
+  */
+typedef enum
+{
+  LOFF_VLEAD_OFF_EN_CURRENT_SOURCE = 0,
+  LOFF_VLEAD_OFF_EN_PULL_RESISTOR  = 1,
+}ADS_LOFF_VLEAD_OFF_EN_Bit;
 
-  ADS_CONFIG_PD_RLD_Bit     PD_RLD;    /*!< RLD buffer power.
-                           	   	   	   This bit determines the RLD buffer
-                           	   	   	   power state */
+/** @brief Lead-off current magnitude
+  * These bits determine the magnitude of
+  * current for the current lead-off mode
+  */
+typedef enum
+{
+  LOFF_ILEAD_OFF_6_nA  = 0b00,
+  LOFF_ILEAD_OFF_12_nA = 0b01,
+  LOFF_ILEAD_OFF_18_nA = 0b10,
+  LOFF_ILEAD_OFF_24_nA = 0b11,
+}ADS_ILEAD_OFF_Bits;
 
-  ADS_CONFIG_RLD_LOFF_SENS_Bit RLD_LOFF_SENS;  /*!< RLD sense function.
-                           	   	   	   This bit enables the RLD sense function */
+/** @brief Lead-off frequency
+  * These bits determine the frequency of
+  * lead-off detect for each channel
+  */
+typedef enum
+{
+  LOFF_FLEAD_OFF_TURN_OFF        = 0b00,
+  LOFF_FLEAD_OFF_AC_at_fDR_DIV_4 = 0b01,
+  LOFF_FLEAD_OFF_DC              = 0b11,
+}ADS_FLEAD_OFF_Bits;
 
-  ADS_CONFIG_RLD_STAT_Bit   RLD_STAT;  /*!< RLD lead-off status.
-                           	   	   	   This bit determines the RLD status */
+/** @brief Lead-Off Control Register
+  */
+typedef union
+{
+    struct
+    {
+        ADS_FLEAD_OFF_Bits        FLEAD_OFF    :2;
+        ADS_ILEAD_OFF_Bits        ILEAD_OFF    :2;
+        ADS_LOFF_VLEAD_OFF_EN_Bit VLEAD_OFF_EN :1;
+        ADS_LOFF_COMP_TH_Bits     COMP_TH      :3;
+    } s;
+    uint8_t byte;
+}ADS_LOFF_InitTypeDef;
 
-}ADS_CONFIG_InitTypeDef;
-
-
+// LOFF: Lead-Off Control Register end
 
 
 
