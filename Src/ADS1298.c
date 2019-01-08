@@ -83,7 +83,7 @@ void ADS_Init(){
 	
 	ADS_LOFF_InitTypeDef loff = {.byte = 0x00};
 	loff.s.COMP_TH = LOFF_COMP_TH_P_95_N_5;
-	loff.s.VLEAD_OFF_EN = LOFF_VLEAD_OFF_EN_CURRENT_SOURCE;
+	loff.s.VLEAD_OFF_EN = LOFF_VLEAD_OFF_EN_CurrentSource;
 	loff.s.ILEAD_OFF = LOFF_ILEAD_OFF_6_nA;
 	loff.s.FLEAD_OFF = LOFF_FLEAD_OFF_DC;
 	ADS_WREG(ADS_ADR_LOFF, loff.byte);
@@ -97,68 +97,127 @@ void ADS_Init(){
 	//ADS_WREG(ADS_ADR_LOFF,0x03);
 	HAL_Delay(10);
 	
+    ADS_CHnSET_InitTypeDef ch_set = {.byte = 0x00};
+    ch_set.s.PD = CHnSET_PD_Normal;
+    ch_set.s.GAIN = CHnSET_GAIN_8;
+    ch_set.s.MUX = CHnSET_MUX_NormalInput;
+    ADS_WREG(ADS_ADR_CH1SET, ch_set.byte);
+    HAL_Delay(10);
+    ADS_WREG(ADS_ADR_CH2SET, ch_set.byte);
+    HAL_Delay(10);
+    ADS_WREG(ADS_ADR_CH3SET, ch_set.byte);
+    HAL_Delay(10);
+    ADS_WREG(ADS_ADR_CH4SET, ch_set.byte);
+    HAL_Delay(10);
+    ADS_WREG(ADS_ADR_CH5SET, ch_set.byte);
+    HAL_Delay(10);
+    ADS_WREG(ADS_ADR_CH6SET, ch_set.byte);
+    HAL_Delay(10);
+    ADS_WREG(ADS_ADR_CH7SET, ch_set.byte);
+    HAL_Delay(10);
+    ch_set.s.MUX = CHnSET_MUX_TestSignal;
+    ADS_WREG(ADS_ADR_CH8SET, ch_set.byte);
+    HAL_Delay(10);
 	//0b0101_0000
 	//7 bit on 0 - Power-down: On(0) or Off(1)
 	//6:4 bit on 101 - PGA gain: 101 = 8
 	//3 bit on 0 - Reserved
 	//2:0 bit on 000 - Channel input: 000 = Normal electrode input
-	ADS_WREG(ADS_ADR_CH1SET,0x50);  
-	HAL_Delay(10);
-	ADS_WREG(ADS_ADR_CH2SET,0x50);  
-	HAL_Delay(10);
-	ADS_WREG(ADS_ADR_CH3SET,0x50);  
-	HAL_Delay(10);
-	ADS_WREG(ADS_ADR_CH4SET,0x50);  
-	HAL_Delay(10);
-	ADS_WREG(ADS_ADR_CH5SET,0x50);
-	HAL_Delay(10);
-	ADS_WREG(ADS_ADR_CH6SET,0x50);
-	HAL_Delay(10);
-	ADS_WREG(ADS_ADR_CH7SET,0x50);
-	HAL_Delay(10);
-	ADS_WREG(ADS_ADR_CH8SET,0x55);
+	//ADS_WREG(ADS_ADR_CH8SET,0x55);
 	HAL_Delay(10);
 	
-
+	ADS_RLD_SENSP_InitTypeDef rld_sensp = {.byte=0x00};
+	rld_sensp.s.RLD8P = DISABLE;
+	rld_sensp.s.RLD7P = DISABLE;
+	rld_sensp.s.RLD6P = DISABLE;
+	rld_sensp.s.RLD5P = DISABLE;
+	rld_sensp.s.RLD4P = DISABLE;
+	rld_sensp.s.RLD3P = DISABLE;
+	rld_sensp.s.RLD2P = DISABLE;
+	rld_sensp.s.RLD1P = DISABLE;
+	ADS_WREG(ADS_ADR_RLD_SENSP, rld_sensp.byte);
 	//0b0000_0000
 	//7:0 bit on 0 - INxP to RLD: Disabled (0) or Enabled (1)
-	ADS_WREG(ADS_ADR_BIAS_SENSP,0x00);  
+	//ADS_WREG(ADS_ADR_BIAS_SENSP,0x00);
 	HAL_Delay(10);
 
+	ADS_RLD_SENSN_InitTypeDef rld_sensn = {.byte=0x00};
+    rld_sensn.s.RLD8N = DISABLE;
+    rld_sensn.s.RLD7N = DISABLE;
+    rld_sensn.s.RLD6N = DISABLE;
+    rld_sensn.s.RLD5N = DISABLE;
+    rld_sensn.s.RLD4N = DISABLE;
+    rld_sensn.s.RLD3N = DISABLE;
+    rld_sensn.s.RLD2N = DISABLE;
+    rld_sensn.s.RLD1N = DISABLE;
+    ADS_WREG(ADS_ADR_RLD_SENSN, rld_sensn.byte);
 	//0b0000_0000
 	//7:0 bit on 0 - INxN to RLD: Disabled (0) or Enabled (1)
-	ADS_WREG(ADS_ADR_BIAS_SENSN,0x00);  
+	//ADS_WREG(ADS_ADR_BIAS_SENSN,0x00);
 	HAL_Delay(10);
 	
+
+    ADS_LOFF_SENSP_InitTypeDef loff_sensp = {.byte=0x00};
+    loff_sensp.s.LOFF8P = ENABLE;
+    loff_sensp.s.LOFF7P = ENABLE;
+    loff_sensp.s.LOFF6P = ENABLE;
+    loff_sensp.s.LOFF5P = ENABLE;
+    loff_sensp.s.LOFF4P = ENABLE;
+    loff_sensp.s.LOFF3P = ENABLE;
+    loff_sensp.s.LOFF2P = ENABLE;
+    loff_sensp.s.LOFF1P = ENABLE;
+    ADS_WREG(ADS_ADR_LOFF_SENSP, loff_sensp.byte);
 	//0b1111_1111
 	//7:0 bit on 0 - INxP lead off: Disabled (0) or Enabled (1)
-	ADS_WREG(ADS_ADR_LOFF_SENSP,0xFF);  
+	//ADS_WREG(ADS_ADR_LOFF_SENSP,0xFF);
 	HAL_Delay(10);
 
+	ADS_LOFF_SENSN_InitTypeDef loff_sensn = {.byte=0x00};
+    loff_sensn.s.LOFF8N = ENABLE;
+    loff_sensn.s.LOFF7N = ENABLE;
+    loff_sensn.s.LOFF6N = ENABLE;
+    loff_sensn.s.LOFF5N = ENABLE;
+    loff_sensn.s.LOFF4N = ENABLE;
+    loff_sensn.s.LOFF3N = ENABLE;
+    loff_sensn.s.LOFF2N = ENABLE;
+    loff_sensn.s.LOFF1N = ENABLE;
+	ADS_WREG(ADS_ADR_LOFF_SENSN, loff_sensn.byte);
 	//0b0000_0010
 	//7:0 bit on 0 - INxN lead off: Disabled (0) or Enabled (1)
-	ADS_WREG(ADS_ADR_LOFF_SENSN,0x00);
+	//ADS_WREG(ADS_ADR_LOFF_SENSN,0x00);
 	HAL_Delay(10);
 	
+
+	ADS_LOFF_FLIP_InitTypeDef loff_flip = {.byte=0x00};
+    loff_flip.s.LOFF_FLIP8 = LOFF_FLIP_NoFilp;
+    loff_flip.s.LOFF_FLIP7 = LOFF_FLIP_NoFilp;
+    loff_flip.s.LOFF_FLIP6 = LOFF_FLIP_NoFilp;
+    loff_flip.s.LOFF_FLIP5 = LOFF_FLIP_NoFilp;
+    loff_flip.s.LOFF_FLIP4 = LOFF_FLIP_NoFilp;
+    loff_flip.s.LOFF_FLIP3 = LOFF_FLIP_NoFilp;
+    loff_flip.s.LOFF_FLIP2 = LOFF_FLIP_NoFilp;
+    loff_flip.s.LOFF_FLIP1 = LOFF_FLIP_NoFilp;
+    ADS_WREG(ADS_ADR_LOFF_FLIP, loff_flip.byte);
 	//0b0000_0000
 	//7:0 bit on 0 - Channel X LOFF polarity flip: No Flip (0) or Flipped (1)
-	ADS_WREG(ADS_ADR_LOFF_FLIP,0x00);  
+	//ADS_WREG(ADS_ADR_LOFF_FLIP,0x00);
 	HAL_Delay(10);
 	
-	//0b1111_1000
-	//7:0 bit on 0 - Channel X positive channel lead-off status: On (0) or Off (1)
-	ADS_WREG(ADS_ADR_LOFF_STATP,0x00);
-	HAL_Delay(10);
-	
-	//0b1111_1000
-	//7:0 bit on 0 - Channel X negative channel lead-off status: On(0) or Off(1)
-	ADS_WREG(ADS_ADR_LOFF_STATN,0x00);  
-	HAL_Delay(10);
-	
+
+	ADS_GPIO_InitTypeDef gpio = {.byte=0x00};
+	gpio.s.GPIOD4 = RESET;
+    gpio.s.GPIOD3 = RESET;
+    gpio.s.GPIOD2 = RESET;
+    gpio.s.GPIOD1 = RESET;
+	gpio.s.GPIOC4 = GPIOC_Output;
+	gpio.s.GPIOC3 = GPIOC_Output;
+	gpio.s.GPIOC2 = GPIOC_Output;
+	gpio.s.GPIOC1 = GPIOC_Output;
+	ADS_WREG(ADS_ADR_GPIO, gpio.byte);
 	//0b0000_0000
 	//7:4 bit on 0 - GPIO data
 	//3:0 bit on 0 - GPIO control: Output(0) or Input(1)
-	ADS_WREG(ADS_ADR_GPIO,0x00);  
+	//ADS_WREG(ADS_ADR_GPIO,0x00);
 	HAL_Delay(10);
 	
 	//0b0000_0000
@@ -166,7 +225,7 @@ void ADS_Init(){
 	//4:3 bit on 00 - Pace even channels: 00 = Channel 2
 	//2:1 bit on 00 - Pace odd channels: 00 = Channel 1
 	//0 bit on 0 - Pace detect buffer: Off(0) or On(1)
-	ADS_WREG(ADS_ADR_MISC1,0x00);  
+	ADS_WREG(ADS_ADR_PACE,0x00);
 	HAL_Delay(10);
 
 	//0b1111_0000
@@ -175,7 +234,7 @@ void ADS_Init(){
 	//5 bit on 1 - Reserved
 	//4:2 bit on 100 - Respiration phase: 100 = 112.5deg
 	//1:0 bit on 00 - Respiration control: 00 = No respiration
-	ADS_WREG(ADS_ADR_MISC2,0xF0);  
+	ADS_WREG(ADS_ADR_RESP,0xF0);
 	HAL_Delay(10);
 	
 	//0b0010_0010

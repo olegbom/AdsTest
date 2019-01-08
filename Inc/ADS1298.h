@@ -28,16 +28,16 @@
 #define ADS_ADR_CH6SET      0x0A
 #define ADS_ADR_CH7SET      0x0B
 #define ADS_ADR_CH8SET      0x0C
-#define ADS_ADR_BIAS_SENSP  0x0D
-#define ADS_ADR_BIAS_SENSN  0x0E
+#define ADS_ADR_RLD_SENSP   0x0D
+#define ADS_ADR_RLD_SENSN   0x0E
 #define ADS_ADR_LOFF_SENSP  0x0F
 #define ADS_ADR_LOFF_SENSN  0x10
 #define ADS_ADR_LOFF_FLIP   0x11
 #define ADS_ADR_LOFF_STATP  0x12
 #define ADS_ADR_LOFF_STATN  0x13
 #define ADS_ADR_GPIO        0x14
-#define ADS_ADR_MISC1       0x15
-#define ADS_ADR_MISC2       0x16
+#define ADS_ADR_PACE        0x15
+#define ADS_ADR_RESP        0x16
 #define ADS_ADR_CONFIG4     0x17
 #define ADS_ADR_WCT1        0x18
 #define ADS_ADR_WCT2        0x19
@@ -293,8 +293,8 @@ typedef enum
   */
 typedef enum
 {
-  LOFF_VLEAD_OFF_EN_CURRENT_SOURCE = 0,
-  LOFF_VLEAD_OFF_EN_PULL_RESISTOR  = 1,
+  LOFF_VLEAD_OFF_EN_CurrentSource = 0,
+  LOFF_VLEAD_OFF_EN_PullResistor  = 1,
 }ADS_LOFF_VLEAD_OFF_EN_Bit;
 
 /** @brief Lead-off current magnitude
@@ -307,7 +307,7 @@ typedef enum
   LOFF_ILEAD_OFF_12_nA = 0b01,
   LOFF_ILEAD_OFF_18_nA = 0b10,
   LOFF_ILEAD_OFF_24_nA = 0b11,
-}ADS_ILEAD_OFF_Bits;
+}ADS_LOFF_ILEAD_OFF_Bits;
 
 /** @brief Lead-off frequency
   * These bits determine the frequency of
@@ -315,10 +315,10 @@ typedef enum
   */
 typedef enum
 {
-  LOFF_FLEAD_OFF_TURN_OFF        = 0b00,
+  LOFF_FLEAD_OFF_TurnOff         = 0b00,
   LOFF_FLEAD_OFF_AC_at_fDR_DIV_4 = 0b01,
   LOFF_FLEAD_OFF_DC              = 0b11,
-}ADS_FLEAD_OFF_Bits;
+}ADS_LOFF_FLEAD_OFF_Bits;
 
 /** @brief Lead-Off Control Register
   */
@@ -326,8 +326,8 @@ typedef union
 {
     struct
     {
-        ADS_FLEAD_OFF_Bits        FLEAD_OFF    :2;
-        ADS_ILEAD_OFF_Bits        ILEAD_OFF    :2;
+        ADS_LOFF_FLEAD_OFF_Bits   FLEAD_OFF    :2;
+        ADS_LOFF_ILEAD_OFF_Bits   ILEAD_OFF    :2;
         ADS_LOFF_VLEAD_OFF_EN_Bit VLEAD_OFF_EN :1;
         ADS_LOFF_COMP_TH_Bits     COMP_TH      :3;
     } s;
@@ -336,8 +336,275 @@ typedef union
 
 // LOFF: Lead-Off Control Register end
 
+// CHnSET: Individual Channel Settings begin
+
+/** @brief Power-down
+  * This bit determines the channel
+  * power mode for the
+  * corresponding channel.
+  */
+typedef enum
+{
+  CHnSET_PD_Normal = 0,
+  /// @brief See datasheet
+  CHnSET_PD_PowerDown = 1,
+}ADS_CHnSET_PD_Bit;
+
+/** @brief PGA gain
+  * These bits determine the PGA gain setting
+  */
+typedef enum
+{
+  CHnSET_GAIN_6  = 0b000,
+  CHnSET_GAIN_1  = 0b001,
+  CHnSET_GAIN_2  = 0b010,
+  CHnSET_GAIN_3  = 0b011,
+  CHnSET_GAIN_4  = 0b100,
+  CHnSET_GAIN_8  = 0b101,
+  CHnSET_GAIN_12 = 0b110,
+}ADS_CHnSET_GAIN_Bits;
+
+/** @brief Channel input
+  * These bits determine the channel input selection
+  */
+typedef enum
+{
+  CHnSET_MUX_NormalInput  = 0b000,
+  CHnSET_MUX_InputShorted = 0b001,
+  CHnSET_MUX_RLD_MEAS     = 0b010,
+  CHnSET_MUX_MVDD         = 0b011,
+  CHnSET_MUX_TempSensor   = 0b100,
+  CHnSET_MUX_TestSignal   = 0b101,
+  CHnSET_MUX_RLD_DRP      = 0b110,
+  CHnSET_MUX_RLD_DRN      = 0b111,
+}ADS_CHnSET_MUX_Bits;
 
 
+/** @brief Individual Channel Settings
+  */
+typedef union
+{
+    struct
+    {
+        ADS_CHnSET_MUX_Bits  MUX      :3;
+        unsigned int         RESERVED :1;
+        ADS_CHnSET_GAIN_Bits GAIN     :3;
+        ADS_CHnSET_PD_Bit    PD       :1;
+
+    } s;
+    uint8_t byte;
+}ADS_CHnSET_InitTypeDef;
+
+// CHnSET: Individual Channel Settings end
+
+// RLD_SENSP: RLD Positive Signal Derivation Register begin
+
+/** @brief RLD Positive Signal Derivation Register
+  */
+typedef union
+{
+    struct
+    {
+        FunctionalState RLD1P:1;
+        FunctionalState RLD2P:1;
+        FunctionalState RLD3P:1;
+        FunctionalState RLD4P:1;
+        FunctionalState RLD5P:1;
+        FunctionalState RLD6P:1;
+        FunctionalState RLD7P:1;
+        FunctionalState RLD8P:1;
+    } s;
+    uint8_t byte;
+}ADS_RLD_SENSP_InitTypeDef;
+
+// RLD_SENSP: RLD Positive Signal Derivation Register end
+
+// RLD_SENSN: RLD Negative Signal Derivation Register begin
+
+/** @brief RLD Negative Signal Derivation Register
+  */
+typedef union
+{
+    struct
+    {
+        FunctionalState RLD1N:1;
+        FunctionalState RLD2N:1;
+        FunctionalState RLD3N:1;
+        FunctionalState RLD4N:1;
+        FunctionalState RLD5N:1;
+        FunctionalState RLD6N:1;
+        FunctionalState RLD7N:1;
+        FunctionalState RLD8N:1;
+    } s;
+    uint8_t byte;
+}ADS_RLD_SENSN_InitTypeDef;
+
+// RLD_SENSN: RLD Negative Signal Derivation RegisterA end
+
+// LOFF_SENSP: Positive Signal Lead-Off Detection Register  begin
+
+/** @brief RLD Positive Signal Lead-Off Detection Register
+  */
+typedef union
+{
+    struct
+    {
+        FunctionalState LOFF1P:1;
+        FunctionalState LOFF2P:1;
+        FunctionalState LOFF3P:1;
+        FunctionalState LOFF4P:1;
+        FunctionalState LOFF5P:1;
+        FunctionalState LOFF6P:1;
+        FunctionalState LOFF7P:1;
+        FunctionalState LOFF8P:1;
+    } s;
+    uint8_t byte;
+}ADS_LOFF_SENSP_InitTypeDef;
+
+// LOFF_SENSP: Positive Signal Lead-Off Detection Register  end
+
+// LOFF_SENSN: Negative Signal Lead-Off Detection Register  begin
+
+/** @brief RLD Negative Signal Lead-Off Detection Register
+  */
+typedef union
+{
+    struct
+    {
+        FunctionalState LOFF1N:1;
+        FunctionalState LOFF2N:1;
+        FunctionalState LOFF3N:1;
+        FunctionalState LOFF4N:1;
+        FunctionalState LOFF5N:1;
+        FunctionalState LOFF6N:1;
+        FunctionalState LOFF7N:1;
+        FunctionalState LOFF8N:1;
+    } s;
+    uint8_t byte;
+}ADS_LOFF_SENSN_InitTypeDef;
+
+// LOFF_SENSN: Negative Signal Lead-Off Detection Register end
+
+// LOFF_FLIP: Lead-Off Flip Register begin
+
+/** @brief Channel LOFF polarity flip
+  * Flip the pullup/pulldown polarity
+  * of the current source or resistor
+  * on channel for lead-off derivation
+  */
+typedef enum
+{
+    LOFF_FLIP_NoFilp  = 0,
+    LOFF_FLIP_Flipped = 1,
+}ADS_LOFF_FLIP_Bit;
+/** @brief Lead-Off Flip Register
+  * This register controls the direction
+  * of the current used for lead-off derivation
+  */
+typedef union
+{
+    struct
+    {
+        ADS_LOFF_FLIP_Bit LOFF_FLIP1:1;
+        ADS_LOFF_FLIP_Bit LOFF_FLIP2:1;
+        ADS_LOFF_FLIP_Bit LOFF_FLIP3:1;
+        ADS_LOFF_FLIP_Bit LOFF_FLIP4:1;
+        ADS_LOFF_FLIP_Bit LOFF_FLIP5:1;
+        ADS_LOFF_FLIP_Bit LOFF_FLIP6:1;
+        ADS_LOFF_FLIP_Bit LOFF_FLIP7:1;
+        ADS_LOFF_FLIP_Bit LOFF_FLIP8:1;
+    } s;
+    uint8_t byte;
+}ADS_LOFF_FLIP_InitTypeDef;
+
+// LOFF_FLIP: Lead-Off Flip Register end
+
+// LOFF_STATP: Lead-Off Positive Signal Status Register  begin
+
+/** @brief Channel lead-off status
+  * Status of whether electrode is on or off
+  */
+typedef enum
+{
+    LOFF_STAT_On  = 0,
+    LOFF_STAT_Off = 1,
+}ADC_LOFF_STAT_Bit;
+
+/** @brief Lead-Off Positive Signal Status Register
+  * This register stores the status of whether the positive
+  * electrode on each channel is on or off
+  */
+typedef union
+{
+    struct
+    {
+        ADC_LOFF_STAT_Bit IN1P_OFF:1;
+        ADC_LOFF_STAT_Bit IN2P_OFF:1;
+        ADC_LOFF_STAT_Bit IN3P_OFF:1;
+        ADC_LOFF_STAT_Bit IN4P_OFF:1;
+        ADC_LOFF_STAT_Bit IN5P_OFF:1;
+        ADC_LOFF_STAT_Bit IN6P_OFF:1;
+        ADC_LOFF_STAT_Bit IN7P_OFF:1;
+        ADC_LOFF_STAT_Bit IN8P_OFF:1;
+    } s;
+    uint8_t byte;
+}ADS_LOFF_STATP_InitTypeDef;
+
+// LOFF_STATP: Lead-Off Positive Signal Status Register  end
+
+// LOFF_STATN: Lead-Off Negative Signal Status Register   begin
+
+/** @brief RLD Lead-Off Negative Signal Status Register
+  * This register stores the status of whether the negative
+  * electrode on each channel is on or off
+  */
+typedef union
+{
+    struct
+    {
+        ADC_LOFF_STAT_Bit IN1N_OFF:1;
+        ADC_LOFF_STAT_Bit IN2N_OFF:1;
+        ADC_LOFF_STAT_Bit IN3N_OFF:1;
+        ADC_LOFF_STAT_Bit IN4N_OFF:1;
+        ADC_LOFF_STAT_Bit IN5N_OFF:1;
+        ADC_LOFF_STAT_Bit IN6N_OFF:1;
+        ADC_LOFF_STAT_Bit IN7N_OFF:1;
+        ADC_LOFF_STAT_Bit IN8N_OFF:1;
+    } s;
+    uint8_t byte;
+}ADS_LOFF_STATN_InitTypeDef;
+
+// LOFF_STATN: Lead-Off Negative Signal Status Register  end
+
+// GPIO: General-Purpose I/O Register begin
+
+/** @brief GPIO control
+  * These bits determine if the corresponding
+  * GPIOD pin is an input or output
+  */
+typedef enum
+{
+    GPIOC_Output  = 0,
+    GPIOC_Input = 1,
+}ADC_GPIOC_Bit;
+
+typedef union
+{
+    struct
+    {
+        ADC_GPIOC_Bit GPIOC1:1;
+        ADC_GPIOC_Bit GPIOC2:1;
+        ADC_GPIOC_Bit GPIOC3:1;
+        ADC_GPIOC_Bit GPIOC4:1;
+        FlagStatus    GPIOD1:1;
+        FlagStatus    GPIOD2:1;
+        FlagStatus    GPIOD3:1;
+        FlagStatus    GPIOD4:1;
+    } s;
+    uint8_t byte;
+}ADS_GPIO_InitTypeDef;
+
+// GPIO: General-Purpose I/O Register end
 
 
 extern uint8_t verbose;
